@@ -73,10 +73,9 @@ def validate(
 
 
 # =========================
-# Validators
+# Input validators
 # =========================
-def is_not_empty(value: str) -> ValidationResult:
+def is_not_blank(value: str) -> ValidationResult:
     if not value:
-        return ValidationResult(False, "Input cannot be empty")
+        return ValidationResult(False, "Input must not be blank!")
     return ValidationResult(True)
-
