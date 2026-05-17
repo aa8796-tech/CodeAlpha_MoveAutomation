@@ -1,7 +1,7 @@
 import shutil
 from pathlib import Path
 
-def execute(self, file: Path) -> None:
+def move_file(file: Path, destination: str) -> None:
     """
     Moves a file to the destination directory.
 
@@ -16,12 +16,12 @@ def execute(self, file: Path) -> None:
             If the move operation fails.
     """
 
-    if not self.destination.exists():
-        self.destination.mkdir(parents=True, exist_ok=True)
+    if not destination.exists():
+        destination.mkdir(parents=True, exist_ok=True)
 
     if not file.exists():
         raise FileNotFoundError(f"File not found: {file}")
 
-    target_path = self.destination / file.name
+    target_path = destination / file.name
 
     shutil.move(str(file), str(target_path))
