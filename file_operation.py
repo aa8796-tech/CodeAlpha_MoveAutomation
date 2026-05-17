@@ -1,32 +1,27 @@
 import shutil
 from pathlib import Path
 
+def execute(self, file: Path) -> None:
+    """
+    Moves a file to the destination directory.
 
-class MoveOperation:
-    def __init__(self, destination: str):
-        self.destination = Path(destination)
+    Args:
+        file (Path):
+            The file to be moved.
 
-    def execute(self, file: Path) -> None:
-        """
-        Moves a file to the destination directory.
+    Raises:
+        FileNotFoundError:
+            If the file does not exist.
+        OSError:
+            If the move operation fails.
+    """
 
-        Args:
-            file (Path):
-                The file to be moved.
+    if not self.destination.exists():
+        self.destination.mkdir(parents=True, exist_ok=True)
 
-        Raises:
-            FileNotFoundError:
-                If the file does not exist.
-            OSError:
-                If the move operation fails.
-        """
+    if not file.exists():
+        raise FileNotFoundError(f"File not found: {file}")
 
-        if not self.destination.exists():
-            self.destination.mkdir(parents=True, exist_ok=True)
+    target_path = self.destination / file.name
 
-        if not file.exists():
-            raise FileNotFoundError(f"File not found: {file}")
-
-        target_path = self.destination / file.name
-
-        shutil.move(str(file), str(target_path))
+    shutil.move(str(file), str(target_path))
