@@ -1,17 +1,16 @@
 from abc import ABC, abstractmethod
-from pathlib import Path
+import os
 from typing import Iterable
-from file_operation import FilePath
 
 class FileFilter(ABC):
 
     @abstractmethod
-    def matches(self, file: FilePath) -> bool:
+    def matches(self, file_path: str) -> bool:
         """
         Determine whether a file satisfies the filter criteria.
 
         Args:
-            file: The file path to evaluate.
+            file_path: The file path to evaluate.
 
         Returns:
             bool: True if the file matches the filter condition,
@@ -19,16 +18,16 @@ class FileFilter(ABC):
         """
         pass
 
-    def apply(self, files: Iterable[FilePath]) -> Iterable[FilePath]:
+    def apply(self, file_paths: Iterable[str]) -> Iterable[str]:
         """
         Lazily apply the filter to an iterable collection of files.
 
         Args:
-            files: An iterable sequence of file paths.
+            file_paths: An iterable sequence of file paths.
 
         Returns:
-            Iterable[FilePath]:
-                A lazy iterable yielding only files that satisfy
+            Iterable[str]:
+                A lazy iterable yielding only file paths that satisfy
                 the filter criteria.
         """
         return (f for f in files if self.matches(f))
@@ -49,7 +48,7 @@ class ExtensionFileFilter(FileFilter):
         Args:
             extensions:
                 frozenset of file extensions
-                {e.g. 'txt', '.png', 'jpg'}.
+                {e.g. 'txt', '.png', 'jpg', 'PNG'}.
         """
 
         # Normalize extensions to lowercase and remove any
@@ -59,26 +58,25 @@ class ExtensionFileFilter(FileFilter):
             for ext in extensions
         )
 	
-    def matches(self, file: FilePath) -> bool:
+    def matches(self, file_path: str) -> bool:
         """
         Check whether the file extension matches
         the configured extension set.
 
         Args:
-            file: The file path to evaluate.
+            file_path: The file path to evaluate.
 
         Returns:
             bool:
                 True if the file extension is included in the
                 configured extensions, or if no extensions
-                were specified.
+                were specified, otherwise Flase.
         """
 
         if not self.extensions:
             return True
             
-        # Convert input to a Path object to ensure a unified
-        # and reliable extension extraction process.
-        file_extension = Path(file).suffix.lower().lstrip('.')
+        
+        file_extension = os.path.splitext(file_path)[1].lstrip('.')
 
         return file_extension in self.extensions
