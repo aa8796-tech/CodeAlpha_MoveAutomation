@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
-import os
 from typing import Iterable
+import os
+
 
 class FileFilter(ABC):
 
@@ -30,7 +31,7 @@ class FileFilter(ABC):
                 A lazy iterable yielding only file paths that satisfy
                 the filter criteria.
         """
-        return (f for f in files if self.matches(f))
+        return (file_path for file_path in file_paths if self.matches(file_path))
 
 
 class ExtensionFileFilter(FileFilter):
@@ -41,14 +42,14 @@ class ExtensionFileFilter(FileFilter):
     case-insensitive matching and consistent formatting.
     """
 
-    def __init__(self, extensions: frozenset[str]):
+    def __init__(self, extensions: Iterable[str]):
         """
         Initialize the extension filter.
 
         Args:
             extensions:
-                frozenset of file extensions
-                {e.g. 'txt', '.png', 'jpg', 'PNG'}.
+                Iterable collection of file extensions
+                [e.g. 'txt', '.png', 'jpg', 'PNG'].
         """
 
         # Normalize extensions to lowercase and remove any
@@ -70,13 +71,13 @@ class ExtensionFileFilter(FileFilter):
             bool:
                 True if the file extension is included in the
                 configured extensions, or if no extensions
-                were specified, otherwise Flase.
+                were specified, otherwise False.
         """
 
         if not self.extensions:
             return True
             
         
-        file_extension = os.path.splitext(file_path)[1].lstrip('.')
+        file_extension = os.path.splitext(file_path)[1].lower().lstrip('.')
 
         return file_extension in self.extensions
