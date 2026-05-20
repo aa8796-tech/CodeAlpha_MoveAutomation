@@ -2,9 +2,6 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Iterable
 
-# Explicit type alias representing supported file path inputs.
-# Accepts both raw string paths and pathlib.Path objects.
-type FilePath = str | Path
 
 class FileFilter(ABC):
 
