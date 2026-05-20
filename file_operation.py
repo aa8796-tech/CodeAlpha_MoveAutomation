@@ -1,13 +1,20 @@
 import shutil
 from pathlib import Path
 
-def move_file(file: Path, destination: str) -> None:
+# Explicit type alias representing supported file path inputs.
+# Accepts both raw string paths and pathlib.Path objects.
+type FilePath = FolderPath = str | Path
+
+
+def move_file(file: FilePath, destination: FilePath) -> None:
     """
     Moves a file to the destination directory.
 
     Args:
-        file (Path):
+        file (FilePath):
             The file to be moved.
+        destination (FolderPath):
+            Destination for file transfer
 
     Raises:
         FileNotFoundError:
@@ -15,7 +22,8 @@ def move_file(file: Path, destination: str) -> None:
         OSError:
             If the move operation fails.
     """
-
+    file = Path(file)
+    destination = Path(destination)
     if not destination.exists():
         destination.mkdir(parents=True, exist_ok=True)
 
