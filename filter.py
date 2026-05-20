@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Iterable
-
+from file_operation import FilePath
 
 class FileFilter(ABC):
 
