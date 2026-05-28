@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-from typing import Callable, List
-
+from collections.abc import Callable, Iterable
+import os
 # =========================
 # Validation Result
 # =========================
@@ -71,11 +71,43 @@ def validate(
 
     return results
 
-
 # =========================
 # Input validators
 # =========================
 def is_not_blank(value: str) -> ValidationResult:
     if not value:
         return ValidationResult(False, "Input must not be blank!")
+    return ValidationResult(True)
+
+def is_in_range(min_val: int, max_val: int, custom_error: str = None) -> Validator:
+    """Factory: Returns a validator that evaluates if a numeric string falls within a specific range.
+    Args:
+        min_val (int): The inclusive lower bound of the range.
+        max_val (int): The inclusive upper bound of the range.
+        custom_error (str, optional): A custom error message if validation fails.
+
+    Returns:
+        Validator: A callable function dedicated solely to range boundary checking.
+    """
+    def validator(value: str) -> ValidationResult:
+        numeric_value = int(value)
+        if min_val <= numeric_value <= max_val:
+            return ValidationResult(True)
+        
+        error_msg = custom_error or f"Value out of range. Expected between {min_val} and {max_val}."
+        return ValidationResult(False, error_msg)
+        
+    return validator
+
+# =========================
+# Domain validators
+# =========================
+def is_valid_srcdir(value: str) -> ValidationResult:
+    """Validator to ensure the input path points to an actual existing directory."""
+    if not os.path.exists(value):
+        return ValidationResult(False, f"The path '{value}' does not exist.")
+    
+    if not os.path.isdir(value):
+        return ValidationResult(False, f"The path '{value}' is not a directory.")
+    
     return ValidationResult(True)
