@@ -111,3 +111,45 @@ def is_valid_srcdir(value: str) -> ValidationResult:
         return ValidationResult(False, f"The path '{value}' is not a directory.")
     
     return ValidationResult(True)
+
+def is_different_from_source(srcdir: str) -> Validator:
+    """Factory: Returns a validator that ensures the destination path differs from the source path.
+    
+    This validator prevents self-referential file operations by ensuring that 
+    the provided target directory is not physically identical to the source directory.
+    
+    Args:
+        srcdir (str): The absolute or relative path of the source directory.
+        
+    Returns:
+        Validator: A callable that accepts a destination path string and returns 
+            a ValidationResult indicating whether the paths are distinctly separated.
+    """
+    def validator(value: str) -> ValidationResult:
+        abs_dest = os.path.abspath(value)
+        if  abs_dest == os.path.abspath(srcdir):
+            return ValidationResult(
+                is_valid=False, 
+                message=f"The destination path cannot be identical to the source path: '{abs_dest}'"
+            )
+        return ValidationResult(is_valid=True)
+        
+    return validator
+
+def is_not_existing_file(value: str) -> ValidationResult:
+    """Validator to ensure the input path is not an already existing regular file.
+    
+    This prevents the application from attempting to create a directory 
+    or move files into a path that is already occupied by a standard file.
+    """
+    if not value:
+        return ValidationResult(True)
+        
+    if os.path.exists(value) and os.path.isfile(value):
+        return ValidationResult(
+            is_valid=False, 
+            message=f"The path '{value}' already exists as a file. Please specify a directory."
+        )
+        
+    return ValidationResult(is_valid=True)
+
