@@ -24,10 +24,15 @@ from ui import (
 	get_validated_input,
 )
 from utility import clear_screen, pause
-from validation import is_not_blank, is_valid_srcdir
-# ==============================================================================
+from validation import (
+	is_not_blank,
+	is_valid_srcdir,
+	is_different_from_source,
+	is_not_existing_file,
+)
+# ====================
 # Global Configuration
-# ==============================================================================
+# ====================
 APPLICATION_TITLE: str = "Move Automation"
 
 # ==================
@@ -50,7 +55,7 @@ def run_automation_page() -> None:
 	
 	dest_dir = get_validated_input(
 		"\nEnter the Destination Path: ", 
-		[is_not_blank]
+		[is_not_blank, is_not_existing_file, is_different_from_source(source_dir)]
 	)
 	time.sleep(0.5)
 	display_divider()
@@ -64,7 +69,7 @@ def run_automation_page() -> None:
 		scanned_files = iter_files(source_dir)
 
 		# File filtering configuration
-		file_filter = ExtensionFileFilter(("jpg", ))
+		file_filter = ExtensionFileFilter(["jpg"])
 		matched_files = list(file_filter.apply(scanned_files))
 
 		if not matched_files:
@@ -150,9 +155,9 @@ def terminate_application() -> None:
 	sys.exit(0)
 
 
-# ==============================================================================
+# ===============================
 # Application Lifecycle Core Loop
-# ==============================================================================
+# ===============================
 def main() -> None:
 	"""Bootstrap and maintain the primary execution loop of the app."""
 	# Instantiate the structural main menu component configuration
@@ -179,5 +184,4 @@ def main() -> None:
 
 if __name__ == "__main__":
 	main()
-
 
